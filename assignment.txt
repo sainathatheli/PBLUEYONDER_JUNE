@@ -138,3 +138,44 @@ a=F14()
 print(a.engine)
 print(a.seat)
 print(a.origin)
+
+
+
+6)Write a Python program to create a person class. Include attributes  like name, country and date of birth. Implement a method to  determine the person’s age. 
+
+Hint: Create a class Person with calculate_age 
+
+Output:
+------
+Person :1
+Name : JOHN
+Country : USA
+DATE of Birth: 1962-11-12
+Current Age : 62
+
+
+7)Write a Python program to create a class representing a bank. Include methods for managing customer accounts and transactions.
+1)create_account
+2)make_deposit
+3)make_withdrawal
+4)Check_balance
+
+
+8)Write a Python program to create a class representing a shopping cart. Include methods for adding and removing items, and calculating the total price. 
+
+Hint:
+Create a class with functions add_item,remove_item, and  calculate_total.
+
+Output:
+-------
+Current Item in Cart:
+
+Papaya -100
+Guava -200
+Orange -150
+Total Quantity:450
+
+Update Items in cart after removing Orange:
+Papaya -100
+Guava -200
+Total Quantity: 300
