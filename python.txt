@@ -2066,22 +2066,9 @@ def m2():
     print(a)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 lambda functions:
 =================
-we can define fucntion by using lamdba keyword
+we can define function by using lambda keyword
 
 syntax:
 =======
@@ -2094,11 +2081,11 @@ print(type(s))
 print("sum of two numbers ",s(10,20))
 
 
-2) write a program to find biggest of given numbers using lambda fucntion.
+2) write a program to find biggest of given numbers using lambda function.
 
      gt = lambda a,b:a if a>b else b
 
-     print("greater number from 10,20 is ",gt(10,20))
+     print("greater number from 10 and 20 is ",gt(10,20))
 
 
 
@@ -2123,17 +2110,16 @@ l1=[0,5,10,15,20,25,30]
 li=list(filter(isEven,l1)
 print(li)
 
+
 with lambda:
 ============
 l1=[0,5,10,15,20,25,30]
 li=list(filter(lambda x:x%2==0,l1))
 print(li)
 
-
-
 map():
 =======
-for every element present in the sequence,add some functionalities and 
+for every element present in the sequence, add some functionalities and 
 generate new element based on required format.
 
 map(function,sequence)
@@ -2783,13 +2769,7 @@ We can write character data to the text files by using the following 2 methods.
 2) writelines(list of lines)
 
 
-Exercises:
-==========
-Write a program to check whether the given files exists or not. If it is exist then print its content.
-write a program to print number of lines, words and characters present in the given file (simple.txt).
 
-
-The seek() and tell() functions:
 
 tell():
 =======
@@ -2885,11 +2865,9 @@ Exercises:
 1)Write a Python program that opens a file and handles a FileNotFoundError exception if the file does not exist.
 
 2)Write a Python program that prompts the user to input two numbers and raises a TypeError exception if the inputs are not numerical.
-
 3)Write a  Python program that executes an operation on a list and handles an IndexError exception if the index is out of range.
 
 4)Write a Python program that executes a list operation and handles an AttributeError exception if the attribute does not exist.
-
 5)
 Exercise
 You're going to write an interactive calculator! User input is assumed to be a formula that consist of a number, an operator (at least + and -), and another number, separated by white space (e.g. 1 + 1). Split user input using str.split(), and check whether the resulting list is valid:
@@ -2899,11 +2877,69 @@ If the input does not consist of 3 elements, raise a FormulaError, which is a cu
 Try to convert the first and third input to a float (like so: float_value = float(str_value)). 
 Catch any ValueError that occurs, 
 and 
-instead raise a FormulaError If the second input is not '+' or '-', again raise a FormulaError
+instead raise a FormulaError If the second input is not '+' or '-', again raise a FormulaError     
 
 If the input is valid, perform the calculation and print out the result. 
 The user is then prompted to provide new input, and so on, until the user enters quit.
 
+6)Create a short program that prompts the user for a list of grades separated by commas. Split the string into individual grades and use a list comprehension to convert each string to an integer. You should use a try statement to inform the user when the values they entered cannot be converted.
+
+7)Investigate what happens when there is a return statement in both the try clause and finally clause of a try statement.
+
+8)Investigate these seek() and tell() functions
+9)Write a program to check whether the given files exists or not. If it is exist then print its content.
+10)write a program to print number of lines, words and characters present in the given file (simple.txt).
+
+
+
+String Formatting:
+------------------
+Python uses C-style string formatting to create new, formatted strings. The "%" operator is used to format a set of variables enclosed in a "tuple" (a fixed size list), together with a format string, which contains normal text together with "argument specifiers", special symbols like "%s" and "%d".
+
+
+Here are some basic argument specifiers you should know:
+
+%s - String (or any object with a string representation, like numbers)
+
+%d - Integers
+
+%f - Floating point numbers
+
+%.<number of digits>f - Floating point numbers with a fixed amount of digits to the right of the dot.
+
+ex:
+---
+name=smith
+age=49
+
+print("name is %s and age is %d" %(name,age))
+
+
+what is virtual environment:
+----------------------------
+A virtual environment is a Python environment such that the Python interpreter, libraries and scripts installed into it are isolated from those installed in other virtual environments
+
+
+how to install virtual envirnoment using Venv
+---------------------------------------------
+pip install virtualenv
+
+
+To use venv in your project, in your terminal, create a new project folder, cd to the project folder in your terminal, and run the following command:
+
+python<version> -m venv <virtual-environment-name>
+
+mkdir projects
+cd projects
+projects>python -m venv env
+
+how to activate Virtual environment
+-------------------------------------
+env\Scripts\activate
+
+To deactivate
+-------------
+~deactivate
 
 
 
@@ -2915,20 +2951,431 @@ The user is then prompted to provide new input, and so on, until the user enters
 
 
 
+Garbage Collection
+===================
+In old languages like C++, programmer is responsible for both creation and destruction 
+of objects. Usually programmer taking very much care while creating object, but 
+neglecting destruction of useless objects. 
+
+Because of his neglecting, total memory can be filled with useless objects which creates memory problems and total application will be down with Out of memory error.
+
+But in Python, We have some assistant which is always running in the background to 
+destroy useless objects. Because this assistant the chance of failing Python program 
+with memory problems is very less. This assistant is nothing but Garbage Collector.
+
+Hence the main objective of Garbage Collector is to destroy useless objects.
+If an object does not have any reference variable then that object eligible for Garbage 
+Collection.
+
+How to enable and disable Garbage Collector in our Program:
+By default Garbage collector is enabled, but we can disable based on our requirement. In 
+this context we can use the following functions of gc module.
+
+gc.isenabled() -> Returns True if GC enabled
+gc.disable() -> To disable GC explicitly
+gc.enable()-> To enable GC explicitly
+
+Ex:
+---
+import gc 
+print(gc.isenabled()) 
+gc.disable() 
+print(gc.isenabled()) 
+gc.enable() 
+print(gc.isenabled()) 
 
 
 
 
+Destructors:
+------------
+Destructor is a special method and the name should be __del__
+Just before destroying an object Garbage Collector always calls destructor to perform 
+clean up activities (Resource deallocation activities like close database connection etc).
+
+Once destructor execution completed then Garbage Collector automatically destroys 
+that object.
+Note: The job of destructor is not to destroy object and it is just to perform clean up 
+activities.
+
+import time 
+class Test: 
+  def __init__(self): 
+ print("Object Initialization...") 
+ def __del__(self): 
+print("Fulfilling Last Wish and performing clean up activities...") 
+ 
+t1=Test() 
+time.sleep(5)
+t1=None 
+ 
+print("End of application")
 
 
 
 
+REGULAR EXPRESSIONS:
+---------------------
+ If we want to represent a group of Strings according to a particular format/pattern 
+then we should go for Regular Expressions.
+ i.e. Regular Expressions is a declarative mechanism to represent a group of Strings 
+according to particular format/pattern.
+
+Eg 1: We can write a regular expression to represent all mobile numbers
+Eg 2: We can write a regular expression to represent all mail ids.
+
+
+We can develop Regular Expression Based applications by using python module: re
+This module contains several inbuilt functions to use Regular Expressions very easily in 
+our applications.
+
+Character Classes:
+------------------
+We can use character classes to search a group of characters
+1) [abc] -> Either a OR b OR c
+2) [^abc] -> Except a and b and c
+3) [a-z] -> Any Lower case alphabet symbol
+4) [A-Z] -> Any upper case alphabet symbol
+5) [a-zA-Z] -> Any alphabet symbol
+6) [0-9] -> Any digit from 0 to 9
+7) [a-zA-Z0-9] -> Any alphanumeric character
+8) [^a-zA-Z0-9] -> Except alphanumeric characters(Special Characters) 
+
+
+Pre defined Character Classes:
+-----------------------------
+1) \s -> Space character
+2) \S -> Any character except space character
+3) \d -> Any digit from 0 to 9
+4) \D -> Any character except digit
+5) \w -> Any word character [a-zA-Z0-9]
+6) \W -> Any character except word character (Special Characters)
+7) . -> Any character including special characters
+
+Quantifiers:
+We can use quantifiers to specify the number of occurrences to match.
+1) a -> Exactly one 'a'
+2) a+ -> Atleast one 'a'
+3) a* -> Any number of a's including zero number
+4) a? -> Atmost one 'a' ie either zero number or one number
+5) a{m} -> Exactly m number of a's
+6) a{m,n} -> Minimum m number of a's and Maximum n number of a's.
+
+Important Functions of Remodule:
+1) match()
+2) fullmatch()
+3) search()
+4) findall()
+5) finditer()
+6) sub()
+7) subn()
+8) split()
+9) compile()
+
+
+On Match object we can call the following methods.
+1) start() -> Returns start index of the match
+2) end() -> Returns end+1 index of the match
+3) group() -> Returns the matched string
+
+Ex:
+----
+Write a pattern for mobileno
+
+[7-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+
+or
+
+[7-9][0-9]{9}
+
+or
+
+[7-9]\d{9}
+
+or
+
+(0|91)?[7-9][0-9]{9}
+
+
+compile()
+----------
+ Returns Module contains compile() Function to compile a Pattern into RegexObject.
+ pattern = re.compile("ab")
+
+ Ex:
+ ---
+import re 
+count=0 
+pattern=re.compile("ab") 
+matcher=pattern.finditer("abaababa") 
+for match in matcher: 
+count+=1 
+print(match.start(),"...",match.end(),"...",match.group()) 
+print("The number of occurrences: ",count)
 
 
 
 
+match():
+--------
+We can use match function to check the given pattern at beginning of target string.
+If the match is available then we will get Match object, otherwise we will get None.
+
+import re 
+s=input("Enter pattern to check: ") 
+m=re.match(s,"abcabdefgabc") 
+if m!= None: 
+	print("Match is available at the beginning of the String") 
+	print("Start Index:",m.start(), "and End Index:",m.end()) 
+else: 
+	print("Match is not available at the beginning of the String")
 
 
+fullmatch():
+------------
+We can use fullmatch() function to match a pattern to all of target string. 
+i.e. complete string should be matched according to given pattern.
+
+If complete string matched then this function returns Match object otherwise it 
+returns None.
+
+Ex:
+---
+import re 
+s=input("Enter pattern to check: ")
+m=re.fullmatch(s,"ababab") 
+print(m)
+if m!= None: 
+	print("Full String Matched") 
+else: 
+	print("Full String not Matched")
+
+
+search():
+---------
+We can use search() function to search the given pattern in the target string.
+If the match is available then it returns the Match object which represents first 
+occurrence of the match.
+
+If the match is not available then it returns None
+
+import re 
+s=input("Enter pattern to check: ") 
+m=re.search(s,"abaaabaaa") 
+if m!= None: 
+	print("Match is available") 
+	print("First Occurrence of match with start index:",m.start(),"and end index:",m.end()) 
+else: 
+	print("Match is not available")
+
+
+
+findall():
+----------
+To find all occurrences of the match.
+This function returns a list object which contains all occurrences.
+
+Ex:
+----
+import re 
+s=input("Enter pattern to check: ") 
+m=re.findall(s,"abaaabaaa") 
+
+for l in m:
+    print(l)
+
+Ex2:
+----
+import re 
+l=re.findall("[0-9]","a7b9c5kz") 
+print(l) 
+for i in l:
+	print(i)
+
+
+finditer():
+===========
+Returns the iterator yielding a match object for each match.
+On each match object we can call start(), end() and group() functions
+
+Ex:
+---
+import re 
+itr=re.finditer("[a-z]","a7b9Bc5k8zA") 
+if itr!=None
+	for m in itr: 
+		print(m.start(),"...",m.end(),"...",m.group())
+ 
+else:
+     print("match not found")
+
+
+
+sub():
+-------
+sub means substitution or replacement.
+re.sub(regex,replacement,targetstring)
+
+In the target string every matched pattern will be replaced with provided replacement.
+
+import re 
+s=re.sub("[a-z]","#","a7b9c5k8z") 
+print(s) 
+
+subn():
+--------
+It is exactly same as sub except it can also returns the number of replacements.
+This function returns a tuple where first element is result string and second element is 
+number of replacements.(resultstring, number of replacements)
+
+import re 
+t=re.subn("[a-z]","#","a7b9c5k8z") 
+print(t) 
+print("The Result String:",t[0]) 
+print("The number of replacements:",t[1])
+
+
+split():
+---------
+If we want to split the given target string according to a particular pattern then we 
+should go for split() function.
+
+This function returns list of all tokens.
+
+import re 
+l=re.split(",","Python,is,Dynamical,typed,language") 
+print(l) 
+for t in l: 
+ print(t)
+
+
+Ex:
+---
+import re 
+l=re.split("is","Python is Dynamical typed language") 
+print(l) 
+for t in l: 
+ print(t)
+
+^ symbol:
+---------
+We can use ^ symbol to check whether the given target string starts with our provided 
+pattern or not.
+
+Eg: res = re.search("^Learn",s)
+
+If the target string starts with learn then it will return Match object, otherwise returns None.
+
+Ex:
+---
+import re 
+s="Learning Python is Very Easy" 
+res=re.search("^learn",s) 
+
+if res != None: 
+	print("Target String starts with Learn") 
+else: 
+	print("Target String Not starts with Learn")
+
+
+
+$ symbol:
+---------
+We can use $ symbol to check whether the given target string ends with our 
+provided pattern or not.
+Eg: res = re.search("Easy$",s)
+
+If the target string ends with Easy then it will return Match object,otherwise returns None.
+
+Exercise:
+---------
+import re 
+s="Learning Python is Very Easy" 
+res=re.search("Easy$",s,re.IGNORECASE) 
+if res != None: 
+print("Target String ends with Easy") 
+else: 
+print("Target String Not ends with Easy")
+
+
+1)Write a program to check given mobilenumber is valid or not.
+sol:
+---
+import re
+
+n=input("enter the mobile no")
+
+m = re.fullmatch("[789][0-9]{9}",n)
+
+if m!=None:
+	print("mobileno is matched")
+else:
+	print("mobileno is not matched")
+
+
+
+Web Scraping by using Regular Expressions:
+-------------------------------------------
+The process of collecting information from web pages is called web scraping. In web 
+scraping to match our required patterns like mail ids, mobile numbers we can use regular 
+expressions.(re,urllib)
+
+
+Ex1:
+----
+import re
+import urllib
+import urllib.request
+
+u=urllib.request.urlopen("https://www.redbus.in/info/contactus")
+text=u.read()
+
+#print(text)
+
+m =re.findall("[0-9]{12}",str(text))
+for i in m:
+    print(i)
+
+Ex2:
+----
+import re
+import urllib
+import urllib.request
+
+u=urllib.request.urlopen("https://www.rediff.com/")
+text=u.read()
+
+#print(text)
+
+m =re.findall("<title>.*</title>",str(text))
+print(m[0])
+
+
+Assignment:
+-----------
+1)write a program to check given gmail id is vaild or not
+2)write a program to check given password is valid or not
+  Note: Password contain One Uppercase, One Lowercase, One digit and
+        minimun atleast 8 characters
+
+2) Write a Python program to check that a string contains only a certain set of characters (in this case a-z, A-Z and 0-9).
+
+3) Write a Python program that matches a string that has an a followed by zero or more b's.
+
+4)Write a Python program to find sequences of lowercase letters joined with a underscore.
+
+5)Write a Python program to find the sequences of one upper case letter followed by lower case letters.
+
+6) Write a Python program to match a string that contains only upper and lowercase letters, numbers, and underscores.
+  
+7)Write a Python program to remove the parenthesis area in a string.
+Sample data : ["example (.com)", "training", "github (.com)", "stackoverflow (.com)"]
+Expected Output:
+example
+training
+github
+stackoverflow
+      
  
 
 
