@@ -1,5 +1,5 @@
 Django Project Folder(Helloworld):
----------------------------------
+---------------------
 1)__init__.py:
 
 It is a blank python script. Because of this special file name, Django treated this folder as 
@@ -479,13 +479,13 @@ Django will takes care everything.But we have to add csrf_token in our form
 </form> 
 </div> 
 
-If we add csrf_token then in the generate form the following hidden field will be 
-added, which makes our post request secure
+If we add csrf_token then in the generate form the following hidded field will be 
+added,which makes our post request secure
 
 <input type='hidden' name='csrfmiddlewaretoken'
 value='1ZqIJJqTLMVa6RFAyPJh7pwzyFmdiHzytLxJIDzAkKULJz4qHcetLoKEsRLwyz4h'/>
 
-The value of this hidden field is keep on changing from request to request. Hence it is 
+The value of this hidden field is keep on changing from request to request.Hence it is 
 impossible to forgery of our request.
 
 If we configured csrf_token in html form then only django will accept our form.
@@ -703,7 +703,7 @@ validation as follows:
 
 def starts_with_d(value): 
 	if value[0].lower() != 'd': 
-	  raise forms.ValidationError('Name should be starts with d | D') 
+	raise forms.ValidationError('Name should be starts with d | D') 
 
 class FeedBackForm(forms.Form): 
 	name=forms.CharField(validators=[starts_with_d]) 
@@ -1154,6 +1154,7 @@ base.html
 </div><!-- /.container-fluid --> 
 </nav> 
 {% block body_block %} 
+ <h1>parent html </h1>
 {% endblock %} 
 </body> 
 </html> 
@@ -1222,7 +1223,6 @@ def first_eight_upper(value):
 	return result 
 
 register.filter('f8upper',first_eight_upper) 
-
 
 
 Note: 
@@ -1428,4 +1428,642 @@ update.html
 </form> 
 
 {% endblock %}
+
+
+
+
+
+
+
+
+
+Class Based Views (CBVs):
+--------------------------
+There are 2 types of views
+1) Function Based Views
+2) Class Based Views
+
+Note:
+1) Class Based Views introduced in Django 1.3 Version to implement Generic Views.
+
+2) When compared with Function Based views,class Based views are very easy to use.
+   Hence Class Based Views are Most frequently used views in real time.
+
+3) Internally Class Based Views will be converted into Function Based Views. Hence Class 
+   Based Views are simply acts as wrappers to the Function based views to hide complexity.
+
+4) Function Based views are more powerful when compared with Class Based Views.
+
+Q) Explain the Scenario where we should use Function based Views only and 
+ we cannot use Class based Views?
+
+For simple operations like listing of all records or display details of a particular record 
+then we should go for Class Based Views.
+
+For complex operations like handling multiple forms simultaneously then we should 
+go for Function Based Views.
+
+
+
+views.py:
+----------
+from django.views.generic import View 
+from django.http import HttpResponse 
+ 
+# Create your views here. 
+class HelloWorldView(View): 
+	def get(self,request): 
+	return HttpResponse('<h1>This is from ClassBasedView</h1>') 
+
+
+
+
+urls.py
+--------
+from testApp import views 
+urlpatterns = [ 
+
+path('hw/',views.HelloWorldView.as_view()), 
+]
+
+
+Note:
+----
+1) While defining Class Based Views we have to extend View class.
+
+2) To provide response to GET request, Django will always call get() method.
+    Hence we have to override this method to provide response to the GET request.
+   Similarly for other HTTP Methods also like POST,HEAD etc
+
+3) While defining url pattern we have to use as_view() method
+
+
+Template Based Application by using Class Based Views:
+--------------------------------------------------------
+class TemplateCBV(TemplateView)
+	template_name = 'home.html'
+
+How to send Context Paramters:
+-------------------------------
+class TemplateCBV(TemplateView)
+	template_name = 'home.html'
+
+	def get_context_data(self,**kwargs):
+ 		context = super().get_context_data(**kwargs)
+ 		context['name'] = 'Bluey'
+ 		context['age'] = 30
+ 		return context
+
+In template file we can access context parameters as follows
+{{name}}
+{{age}}
+
+
+
+
+
+
+ListView:
+---------
+We can use ListView class to list out all records from database table(model).
+It is alternative to ModelClassName.objects.all()
+
+models.py
+--------
+from django.db import models 
+ 
+# Create your models here. 
+class Book(models.Model): 
+	title=models.CharField(max_length=300) 
+	author=models.CharField(max_length=30)
+	pages=models.IntegerField() 	
+	price=models.FloatField() 
+
+
+admin.py:
+----------
+from django.contrib import admin 
+from testapp.models import Book
+
+# Register your models here. 
+class BookAdmin(admin.ModelAdmin): 
+	list_display=['title','author','pages','price'] 
+ 	admin.site.register(Book,BookAdmin)
+
+views.py
+--------
+from testapp.models import Book 
+from django.views.generic import ListView 
+ 
+# Create your views here. 
+class BookListView(ListView): 
+	model=Book 
+
+
+How to create Template File for ListView:
+-----------------------------------------
+Django will identify template automatically and we are not required to configure 
+anywhere. 
+But Django will always search for template file with the name
+modelclassname_list.html like book_list.html
+
+Django will always search for template file in the following location.
+projectname/appname/templates/appname/
+Eg: xxx/xxx/templates/testApp/book_list.html
+
+Note: bydefault django will provide context object to the template file with the 
+name: modelclassname_list
+
+Eg: book_list
+
+
+book_list.html:
+---------------
+<!DOCTYPE html> 
+<html lang="en" dir="ltr"> 
+<head> 
+<meta charset="utf-8"> 
+<title></title> 
+</head> 
+<body> 
+<h1>All Books Information</h1><hr> 
+{% for book in book_list %} 
+<ul> 
+<li> <strong>Title</strong>:{{book.title}}</li> 
+<li> <strong>Author</strong>:{{book.author}}</li> 
+<li> <strong>Pages</strong>:{{book.pages}}</li> 
+<li> <strong>Price</strong>:{{book.price}}</li> 
+</ul>  <hr> 
+{% endfor %} 
+</body> 
+</html>
+
+How to provide our own Context Object Name:
+-------------------------------------------
+The default context object name is: modelclassname_list
+
+But we can customize this name based on our requirement as follows
+
+class BookListView(ListView):
+ 	context_object_name = 'books'
+ 	model = Book
+
+How to configure our own Template File at Project Level:
+--------------------------------------------------------
+ofcourse this approach is not recommended
+
+class BookListView(ListView):
+ 	context_object_name = 'books'
+ 	model = Book
+ 	template_name = 'testapp/bluey.html
+
+
+DetailView:
+-------------
+We can use ListView to list of all records present in the database table.
+But to get details of a particular record, we should go for DetailView.
+
+models.py
+---------
+from django.db import models 
+
+class Company(models.Model): 
+	name=models.CharField(max_length=128) 
+	location=models.CharField(max_length=64) 
+	ceo=models.CharField(max_length=64)
+
+
+admin.py
+--------
+from django.contrib import admin 
+from testapp.models import Company 
+ 
+# Register your models here. 
+
+class CompanyAdmin(admin.ModelAdmin): 
+	list_display=['name','location','ceo'] 
+
+admin.site.register(Company,CompanyAdmin)
+
+
+views.py
+---------
+from django.shortcuts import render 
+from testapp.models import Company 
+
+from django.views.generic import ListView,DetailView 
+ 
+# Create your views here. 
+class CompanyListView(ListView): 
+	model=Company 
+	#default template_name is company_list.html 
+ 	#defult context_object_name is company_list 
+ 
+class CompanyDetailView(DetailView): 
+	model=Company 
+	#default template_name is company_detail.html 
+	#defult context_object_name is company or object
+
+
+base.html
+==========
+<!DOCTYPE html> 
+<html lang="en" dir="ltr"> 
+<head> 
+<meta charset="utf-8"> 
+<title></title> 
+<!-- Latest compiled and minified CSS --> 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/cs
+s/bootstrap.min.css" integrity="sha384-
+BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" c
+rossorigin="anonymous"> 
+</head> 
+<body> 
+ <div class="container" > 
+{%block body_block%} 
+ {%endblock %} 
+</div> 
+</body> 
+</html> 
+
+
+
+company_list.html
+-----------------
+<!DOCTYPE html> 
+{%extends 'testapp/base.html'%} 
+{%block body_block%} 
+<h1>List of All Companies</h1><hr> 
+<ol> 
+{%for company in company_list%} 
+ <h2><li> <a href="/{{company.id}}">{{company.name|upper}}</a> </li></h2>
+{%endfor%} 
+</ol> 
+{%endblock %}  
+
+
+company_detail.html
+-------------------
+<!DOCTYPE html> 
+{%extends 'testapp/base.html'%} 
+ {%block body_block%} 
+<h1>Company Information</h1><hr> 
+<ol> 
+<h2><li>Company Name: {{company.name|upper}}</li></h2> 
+<h2><li>Company Location: {{company.location|title}}</li></h2> 
+<h2><li>Company CEO: {{company.ceo|title}}</li></h2> 
+</ol> 
+{%endblock %}
+
+urls.py:
+--------
+
+urlpatterns = [ 
+path('^admin/', admin.site.urls), 
+url('^companies/', views.CompanyListView.as_view()), 
+url('^(?P<pk>\d+)/$', views.CompanyDetailView.as_view()), 
+]
+
+
+
+
+By using the following ClassBased Views we can perform CRUD operations very easily.
+-----------------------------------------------------------------------------------
+ListView, DetailView  Retrieve Operation
+CreateView  Create Operation (Insert Data)
+UpdateView  Update Operation
+DeleteView  Delete Operation
+
+CreateView Class:
+
+We can use this CreateView class to insert data into our models.
+views.py
+---------
+class CompanyCreateView(CreateView): 
+	model=Company 
+
+urls.py
+--------
+urlpatterns = [ 
+path('^admin/', admin.site.urls), 
+path('^companies/', views.CompanyListView.as_view()), 
+path('^(?P<pk>\d+)/$', views.CompanyDetailView.as_view(),name='detail'), 
+path('^create/', views.CompanyCreateView.as_view(),name='create')
+]
+
+
+If we send Request:
+-------------------
+ImproperlyConfigured at /create/
+Using ModelFormMixin (base class of CompanyCreateView) without the 'fields' attribute 
+is prohibited.
+
+We can solve this problem by defining fields attribute in CreateView class
+class CompanyCreateView(CreateView):
+ model = Company
+ fields = ('name','location','ceo')
+
+If we send Request:
+TemplateDoesNotExist at /create/testapp/company_form.html
+
+By default CreateView class will always search for template file named with modelclassname_form.html
+Eg: company_form.html
+
+
+company_form.html:
+------------------
+<!DOCTYPE html> 
+{% extends 'testapp/base.html' %} 
+{% block body_block %} 
+<h1>Company Create Form</h1><hr> 
+<form method="post"> 
+{{ form.as_p }} 
+{% csrf_token %} 
+<input type="submit" class='btn btn-primary btn-lg' value="Insert Record"> 
+</form> 
+{% endblock %} 
+
+
+If we fill form and submit:
+---------------------------
+ImproperlyConfigured at /create/
+No URL to redirect to. Either provide a URL or define a get_absolute_url method on the Model.
+
+How to define get_absolute_url() in Model class:
+------------------------------------------------
+
+from django.db import models 
+from django.core.urlresolvers import reverse 
+ 
+# Create your models here. 
+class Company(models.Model): 
+name=models.CharField(max_length=128) 
+location=models.CharField(max_length=64) 
+ceo=models.CharField(max_length=64) 
+
+def __str__(self): 
+ return self.name 
+
+def get_absolute_url(self): 
+return reverse('detail',kwargs={'pk':self.pk}) 
+
+
+
+
+
+UpdateView class:
+-----------------
+We can use UpdateView to update existing record.
+views.py
+---------
+class CompanyUpdateView(UpdateView): 
+	model=Company 
+	fields=('name','ceo')
+	success_url=reverse_lazy('/companies') 
+
+
+Add Update Button in Details Page
+------------------------------------
+company_detail.html
+
+<!DOCTYPE html> 
+{%extends 'testapp/base.html'%} 
+{%block body_block%} 
+<h1>Company Information</h1><hr> 
+<ol> 
+<h2><li>Company Name: {{company.name|upper}}</li></h2> 
+<h2><li>Company Location: {{company.location|title}}</li></h2> 
+<h2><li>Company CEO: {{company.ceo|title}}</li></h2> 
+</ol> 
+<a href="/update/{{company.id}}" class='btn btn-warning'>Update</a> 
+{%endblock %}
+
+
+DeleteView class:
+-------------------
+We can use DeleteView to delete records
+
+views.py
+--------
+from django.core.urlresolvers import reverse_lazy 
+class CompanyDeleteView(DeleteView): 
+	model=Company 
+	success_url=reverse_lazy('/companies') 
+
+note:
+-----
+success_url represents the target page which should be displayed after delete.
+reverse_lazy() function will wait until deleting the record.
+
+urls.py
+--------
+path('^delete/(?P<pk>\d+)/$', views.CompanyDeleteView.as_view(),name='delete')
+
+http://localhost:8000/delete/7
+TemplateDoesNotExist at /delete/7/
+testapp/company_confirm_delete.html
+
+If we are trying to delete, then DeleteView will provide confirmation template.
+
+The default template name is model_confirm_delete.html
+
+Eg: company_confirm_delete.html
+
+We have to provide this template file.
+
+company_confirm_delete.html:
+----------------------------
+
+<!DOCTYPE html> 
+{%extends 'testapp/base.html'%} 
+{%block body_block%} 
+<h1>Delete {{company.name}} ???</h1><hr> 
+<form method="post"> 
+{%csrf_token%} 
+<input type="submit" class='btn btn-danger' value="Delete Record"> 
+<a href="/{{company.id}}" class='btn btn-success'>Cancel</a> 
+</form> 
+{%endblock %}
+
+
+To Place Delete Button on Details Page
+---------------------------------------
+<!DOCTYPE html>
+ {%extends 'testapp/base.html'%} 
+{%block body_block%} 
+<h1>Company Information</h1><hr> 
+<ol> 
+<h2><li>Company Name: {{company.name|upper}}</li></h2> 
+<h2><li>Company Location: {{company.location|title}}</li></h2> 
+<h2><li>Company CEO: {{company.ceo|title}}</li></h2> 
+</ol> 
+1<a href="/update/{{company.id}}" class='btn btn-warning'>Update</a> 
+<a href="/delete/{{company.id}}" class='btn btn-danger'>Delete</a> 
+
+{%endblock %}
+
+
+Django Class Based Views Complete Example(curd):
+------------------------------------------
+create a project companyPro
+create a application as testapp 
+
+
+model.py:
+---------
+
+from django.db import models 
+from django.urls import reverse
+ 
+# Create your models here. 
+class Company(models.Model):
+    name=models.CharField(max_length=128)
+    location=models.CharField(max_length=64)
+    ceo=models.CharField(max_length=64)
+
+def __str__(self): 
+    return self.name 
+
+def get_absolute_url(self):
+    return reverse('detail',kwargs={'pk':self.pk})
+
+note:
+-----
+create the tables by using makemigrations and migrate
+
+admin.py:
+---------
+from django.contrib import admin 
+from testapp.models import Company 
+ 
+ # Register your models here. 
+class CompanyAdmin(admin.ModelAdmin): 
+	list_display=['name','location','ceo'] 
+
+admin.site.register(Company,CompanyAdmin)
+
+views.py
+---------
+from django.shortcuts import render 
+from testapp.models import Company 
+from django.urls import reverse_lazy 
+from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView 
+
+# Create your views here. 
+class CompanyListView(ListView): 
+	model=Company 
+	#default template_name is company_list.html 
+	#defult context_object_name is company_list
+ 
+class CompanyDetailView(DetailView):
+	model=Company 
+	#default template_name is company_detail.html 
+	#defult context_object_name is company or object
+
+class CompanyCreateView(CreateView):
+	model=Company
+	fields=('name','location','ceo')
+
+class CompanyUpdateView(UpdateView): 
+	model=Company 
+	fields=('name','location','ceo')
+	success_url=reverse_lazy('companies')
+
+class CompanyDeleteView(DeleteView):
+	model=Company
+	success_url=reverse_lazy('companies') 
+
+urls.py:
+--------
+
+from testapp import views 
+
+urlpatterns = [ 
+path('admin/', admin.site.urls), 
+path('companies/', views.CompanyListView.as_view(),name='companies'), 
+path('<int:pk>/', views.CompanyDetailView.as_view(),name='detail'), 
+path('create/', views.CompanyCreateView.as_view(),name='create'), 
+path('update/<int:pk>', views.CompanyUpdateView.as_view(),name='update'), 
+path('delete/<int:pk>', views.CompanyDeleteView.as_view(),name='delete')
+]
+
+project/templates/testapp/all html files create here
+
+base.html:
+----------
+<!DOCTYPE html> 
+<html lang="en" dir="ltr"> 
+<head> 
+<meta charset="utf-8"> 
+<title></title> 
+<!-- Latest compiled and minified CSS --> 
+<!--<link> here add the bootstrapCDN--> 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+<body> 
+
+<div class="container" > 
+{% block body_block %} 
+{% endblock %} 
+</div> 
+</body> 
+</html>
+
+company_list.html
+-----------------
+<!DOCTYPE html> 
+{% extends 'testapp/base.html' %} 
+{% block body_block %} 
+<h1>List of All Companies</h1><hr> 
+<ol> 
+{% for company in company_list %} 
+<h2><li> <a href="/{{company.id}}">{{company.name|upper}}</a> </li></h2>   
+{% endfor %} 
+</ol> 
+{% endblock %}
+
+
+company_detail.html:
+--------------------
+<!DOCTYPE html> 
+{% extends 'testapp/base.html' %} 
+{% block body_block %} 
+<h1>Company Information</h1><hr> 
+<ol> 
+<h2><li>Company Name: {{company.name|upper}}</li></h2> 
+<h2><li>Company Location: {{company.location|title}}</li></h2> 
+<h2><li>Company CEO: {{company.ceo|title}}</li></h2> 
+</ol> 
+<a href="/update/{{company.id}}" class='btn btn-warning'>Update</a> 
+<a href="/delete/{{company.id}}" class='btn btn-danger'>Delete</a> 
+{% endblock %} 
+
+
+company_form.html:
+------------------
+<!DOCTYPE html>
+{% extends 'testapp/base.html' %} 
+{% block body_block %} 
+<h1>Company Create Form</h1><hr> 
+<form method="post"> 
+{{form.as_p}} 
+{% csrf_token %} 
+<input type="submit" class='btn btn-primary btn-lg' value="Insert Record"> 
+</form> 
+{% endblock %}
+
+company_confirm_delete.html:
+----------------------------
+<!DOCTYPE html> 
+{% extends 'testapp/base.html' %} 
+{% block body_block %} 
+<h1>Delete {{company.name}} ???</h1><hr> 
+<form method="post"> 
+ {% csrf_token %} 
+<input type="submit" class='btn btn-danger' value="Delete Record"> 
+<a href="/{{company.id}}" class='btn btn-success'>Cancel</a> 
+</form> 
+{% endblock %}
+
+
 
