@@ -1065,3 +1065,367 @@ background:yellow;
 h1{ 
 text-align: center; 
 } 
+
+
+Advanced Templates:
+-------------------
+1) Template Inheritance
+2) Template Filters
+3) Template tags for relative URLs
+
+1)Template Inheritance:
+
+If multiple template files have some common code, it is not recommended to write 
+that common code in every template html file. It increases length of the code and 
+reduces readability. It also increases development time.
+
+We have to separate that common code into a new template file, which is also known 
+as base template. The remaining template files should required to extend base 
+template so that the common code will be inherited automatically.
+
+Inheriting common code from base template to remaining templates is nothing but 
+template inheritance.
+How to implement Template Inheritance:
+
+base.html:
+-----------
+1) <!DOCTYPE html> 
+2) html,css,bootstrap links 
+3) <body> 
+4) common code required for every child template 
+
+5) {% block child_block%} 
+6) Anything outside of this block available to child tag. 
+7) in child template the specific code should be in this block 
+8) {%endblock%} 
+
+
+9) </body> 
+10) </html> 
+
+child.html
+----------
+1) <!DOCTYPE html> 
+2) {% extends 'base.html'%} 
+3) {% block child_block %} 
+4) child specific extra code 
+5) {%endblock%} 
+
+
+Advantages of Template Inheritance:
+-----------------------------------
+1) What ever code available in base template is by default available to child templates 
+and we are not required to write again. Hence it promotes Code Reusability (DRY).
+2) It reduces length of the code and improves readability.
+3) It reduces development time.
+4) It provides unique and same look and feel for total web application
+
+Note: Based on our requirement we can extend any number of base templates.i.e 
+Multiple Inheritance is applicable for templates.
+
+How to Add Separate CSS Files to Child Templates?
+=================================================
+base.html
+---------
+<!DOCTYPE html> 
+{%load static %} 
+<html lang="en" dir="ltr"> 
+<head> 
+<meta charset="utf-8"> 
+<title></title> 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+<link rel="stylesheet" href="{% static 'css/advtempot.css'%}"> 
+{% block xyz %}{% endblock %} 
+</head> 
+<body> 
+<nav class="navbar navbar-default navbar-inverse"> 
+<div class="container"> 
+<!-- Brand and toggle get grouped for better mobile display --> 
+<div class="navbar-header"> 
+<a class="navbar-brand" href="/">RAJ NEWS</a> 
+</div> 
+<ul class="nav navbar-nav"> 
+<li><a href="/">Home</a></li> 
+<li><a href="/movies">Movies</a></li> 
+<li><a href="/sports">Sports</a></li> 
+<li><a href="/politics">Politics</a></li> 
+</ul> 
+</div><!-- /.container-fluid --> 
+</nav> 
+{% block body_block %} 
+{% endblock %} 
+</body> 
+</html> 
+
+child.html:
+-----------
+<!DOCTYPE html> 
+{% extends 'base.html'%} 
+{%load static %} 
+{% block xyz %} 
+<link rel="stylesheet" href="{%static 'css/new.css' %}"> 
+{%endblock%} 
+{% block body_block %} 
+<h1>Welcome to NEWS PORTAL</h1> 
+{% endblock %}
+
+
+
+
+2)Tempalte Filters:
+-------------------
+In the template file, the injected data can be displayed by using template tags.
+
+{{emp.eno}}
+
+Before displaying to the end user if we want to perform some modification to the 
+injected text, like cut some information or converting to title case etc, then we should 
+go for Template filters.
+
+Syntax of Template Filter: {{value|filtername:"argument"}}
+
+Filter may take or may not take arguments.i.e arguments are optional.
+Eg:
+
+<li>{{msg1|lower}}</li>
+ msg1 will be displayed in lower case
+<li>{{msg3|add:RAJU"}}</li>
+ "RAJU" will be added to msg3 and then display the result to the end user
+{{ msg|title }}
+
+{{ my_date|date:"Y-m-d" }}
+
+Note: There are tons of built in filters are available.
+https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#ref-templates-builtinsfilters
+
+How to Create our own Filter:
+-----------------------------
+Based on our requirement we can create our own filter.
+
+Steps:
+1) Create a folder 'templatetags' inside our application folder.
+
+2) Create a special file named with __init__.py inside templatetags folder, so that Django 
+will consider this folder as a valid python package
+
+3) Create a python file inside templatetags folder to define our own filters
+ cust_filters.py -->any name
+
+cust_filters.py
+---------------
+from django import template 
+register=template.Library() 
+ 
+def first_eight_upper(value): 
+ 	result=value[:8].upper() 
+	return result 
+
+register.filter('f8upper',first_eight_upper) 
+
+
+
+Note: 
+We can also register filter with the decorator as follows.
+
+
+from django import template 
+register=template.Library() 
+
+@register.filter(name='f8upper') 
+def first_eight_upper(value): 
+	result=value[:8].upper() 
+	return result 
+
+
+f8upper is the name of the filter which can be used inside template file.
+
+4) Inside template file we have to load the filter file as follows(In the child template 
+bunot in base template) {% load cust_filters %}
+
+5) We can invoke the filter as follows {{msg|f8upper}
+
+
+
+Complete Application (curd operation using Function Based View):
+================================================================
+create project empPro
+create app as testapp
+
+register the testapp in setting.py (INSTALLED_DIRS)
+
+model.py
+----------------
+from django.db import models
+
+# Create your models here.
+
+class Employee(models.Model):
+    eno=models.IntegerField() 
+    ename=models.CharField(max_length=64) 
+    esal=models.FloatField() 
+    eaddr=models.CharField(max_length=256)
+
+
+
+admin.py
+--------
+from django.contrib import admin
+from testapp.models import Employee
+# Register your models here.
+
+ # Register your models here. 
+class EmployeeAdmin(admin.ModelAdmin): 
+	list_display=['eno','ename','esal','eaddr'] 
+
+admin.site.register(Employee,EmployeeAdmin)
+
+
+forms.py
+--------
+from django import forms 
+from testapp.models import Employee
+
+class EmployeeForm(forms.ModelForm): 
+	class Meta:
+		model=Employee
+		fields='__all__'
+
+
+view.py
+------
+from django.shortcuts import render,redirect 
+from testapp.forms import EmployeeForm 
+from testapp.models import Employee 
+
+# Create your views here. 
+def show_view(request): 
+    employees=Employee.objects.all()
+    return render(request,'index.html',{'employees':employees}) 
+
+def insert_view(request): 
+    form=EmployeeForm()
+    if request.method=='POST': 
+        form=EmployeeForm(request.POST)
+        if form.is_valid():
+            form.save() 
+        return redirect('/') 
+    return render(request,'insert.html',{'form':form})
+
+def delete_view(request,id):
+    employee=Employee.objects.get(id=id)
+    employee.delete()
+    return redirect('/') 
+
+def update_view(request,id):
+    employee=Employee.objects.get(id=id)
+    if request.method=='POST':
+        form=EmployeeForm(request.POST,instance=employee)
+        if form.is_valid():
+            form.save()
+        return redirect('/') 
+    return render(request,'update.html',{'employee':employee})
+
+urls.py
+--------
+from django.contrib import admin
+from django.urls import path
+from testapp import views
+import re
+urlpatterns = [
+  path('admin/', admin.site.urls),
+  path('', views.show_view), 
+  path('insert/', views.insert_view), 
+  path('delete/<int:id>', views.delete_view), 
+  path('update/<int:id>', views.update_view)
+]
+
+base.html:
+----------
+<!DOCTYPE html>
+<html lang="en" dir="ltr"> 
+<head> 
+<meta charset="utf-8"> 
+<title></title> 
+<!-- Latest compiled and minified CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head> 
+<body> 
+<div class="container" align='center'> 
+{% block body_block %} 
+{% endblock %} 
+</div> 
+</body> 
+</html> 
+
+index.html:
+------------
+<!DOCTYPE html> 
+{% extends 'base.html' %} 
+{% block body_block %} 
+<h1>Employee Information Dash Board</h1><hr> 
+<table border='2'> 
+<thead> 
+<th>Employee Number</th> 
+<th>Employee Name</th> 
+<th>Employee Salary</th> 
+<th>Employee Address</th> 
+<th>Actions</th> 
+</thead> 
+{% for emp in employees %} 
+<tr>
+    <td>{{emp.eno}}</td> 
+<td>{{emp.ename}}</td> 
+<td>{{emp.esal}}</td> 
+<td>{{emp.eaddr}}</td> 
+<td> 
+<a href="/update/{{emp.id}}">Update</a> 
+<a href="/delete/{{emp.id}}">Delete</a> 
+</td> 
+</tr> 
+{%endfor%} 
+</table><br><br><br> 
+<a href="/insert" class='btn btn-primary btn-lg'> 
+Do You Want to Insert New Employee</a> 
+{% endblock %}
+
+
+insert.html:
+------------
+<!DOCTYPE html> 
+{% extends 'base.html' %} 
+{% block body_block %} 
+<h1>Employee Insert Form</h1><hr> 
+<form method="post"> 
+<table border='1'> 
+{{ form.as_p}}
+</table> 
+{% csrf_token %} 
+<br> 
+<input type="submit" class='btn btn-success btn-lg' value="Insert Record"> 
+</form> 
+{% endblock %}
+
+
+update.html
+-----------
+<!DOCTYPE html> 
+{% extends 'base.html' %} 
+{% block body_block %} 
+<h1>Employee Update Form</h1><hr> 
+
+<form method="post"> 
+    {%csrf_token%} 
+    Employee Number: <input type="text" name="eno" value="{{employee.eno}}">
+    <p></p> 
+    Employee Name: <input type="text" name="ename" value="{{employee.ename}}"
+    ><p></p> 
+    Employee Salary: <input type="text" name="esal" value="{{employee.esal}}">
+    <p></p> 
+    Employee Address: <input type="text" name="eaddr" value="{{employee.eaddr}}"
+    > <p></p> 
+    <input type="submit" class='btn btn-warning btn-lg' value="Update Record"> 
+</form> 
+
+{% endblock %}
+
